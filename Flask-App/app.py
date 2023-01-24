@@ -47,6 +47,15 @@ loaded_model.compile(loss='sparse_categorical_crossentropy',
 print("Loaded model from disk")
 print('Model loaded. Check http://127.0.0.1:5000/')
 
+'''from matplotlib.pyplot import imshow
+def Prediction(img):
+    x = np.array(img.resize((32,32)))
+    x = x.reshape(1,32,32,1)
+    res = model.predict_on_batch(x)
+    classification = np.where(res == np.amax(res))[1][0]
+    imshow(img)
+    print(str(res[0][classification]*100) + '% Confidence ' + dicti[classification])'''
+
 
 def model_predict(img_path, model):
     # img = image.load_img(img_path, target_size=(224, 224))
@@ -56,11 +65,10 @@ def model_predict(img_path, model):
     im = Image.open(img_path)
     # x = np.true_divide(x, 255)
     # x = np.expand_dims(x, axis=0)
-    x = np.array(im.resize((32,32)).convert('L'))
-    x1 = x.flatten()
-    x1 = x1.reshape(-1,32*32)
+    x = np.array(im.resize((32, 32)).convert('L'))
+    x = x.reshape(1, 32, 32, 1)
     #im = np.expand_dims(im, axis=0)
-    pred = model.predict(x1)
+    pred = model.predict(x)
     print(pred)
 
     # Be careful how your trained model deals with the input
@@ -90,17 +98,17 @@ def upload():
         f.save(file_path)
 
         # Make prediction
-        print("Before predict call")
+        #print("Before predict call")
         preds = model_predict(file_path, loaded_model)
-        print("After predict call")
+        #print("After predict call")
         # Process your result for human
         # pred_class = preds.argmax(axis=-1)            # Simple argmax
         # pred_class = decode_predictions(preds, top=1)   # ImageNet Decode
         # result = str(pred_class[0][0][1])               # Convert to string
-        index = np.argmax(preds)
+        index = np.where(preds == np.amax(preds))[1][0]
         arr = {0: 'Arborio', 1: 'Basmati',
                2: 'Ipsala', 3: 'Jasmine', 4: 'Karacadag'}
-
+        print(preds[0][index])
         result = arr[index]
         return result
     return None
